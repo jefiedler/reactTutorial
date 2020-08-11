@@ -1,15 +1,29 @@
 import "./board.css";
 import React, { useCallback } from "react";
 import Square from "./Square";
+import { calculateWinner } from "../api/calcWinner";
 
 export default function Board() {
-  const status = "Next player: X";
-  const [squares, setSquares] = React.useState([null]);
+  const [squares, setSquares] = React.useState(Array(9).fill(null));
+  const [isMonkyEarsNext, setisMonkyEarsNext] = React.useState(true);
 
+  const winner = calculateWinner(squares);
+  let winnerPlayer;
+  if (winner) {
+    winnerPlayer = "Winner:" + winner;
+  } else {
+    winnerPlayer = isMonkyEarsNext ? "Next player:🙉" : "Next player:🙈";
+  }
+
+  const status = isMonkyEarsNext ? "Next player:🙉" : "Next player:🙈";
   const handleClick = (index) => {
     const square = squares.slice();
-    square[index] = "🙉";
+    if (calculateWinner(square) || square[index]) {
+      return;
+    }
+    square[index] = isMonkyEarsNext ? "🙉" : "🙈";
     setSquares(square);
+    setisMonkyEarsNext(!isMonkyEarsNext);
   };
 
   return (
